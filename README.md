@@ -1,4 +1,4 @@
-# CodeConnect React App
+# EDS-Skill-Workshop
 
 A simple React application built with Vite.
 
