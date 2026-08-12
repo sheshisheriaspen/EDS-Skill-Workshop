@@ -37,6 +37,5 @@ A simple React application built with Vite.
 src/
   ├── main.jsx          # Application entry point
   ├── App.jsx           # Main App component
-  ├── App.css           # App component styles
   └── index.css         # Global styles
 ```
