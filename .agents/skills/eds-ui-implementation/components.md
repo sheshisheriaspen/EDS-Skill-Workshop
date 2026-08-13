@@ -2,6 +2,11 @@
 
 ## Layout
 
+- Always confirm the web component host receives a real `class` attribute in rendered DOM.
+- React: do not rely on `className` for custom elements when styling hooks are required; verify output on the host element. Use `useRef` to obtain a reference for imperative API calls (for example `ref.current.scrollToBottom()`).
+- Angular: use `class` or `[ngClass]` on custom elements so styling hooks bind to the host class list. Use `@ViewChild` for imperative API access.
+- If sizing or alignment rules appear ignored, inspect host attributes first (for example `class` vs `classname`) before changing tokenized layout styles.
+
 ### Core layout guidance
 
 - Use `eds-shell-template` for app-level chrome.
@@ -65,9 +70,10 @@
 ### Form layout baseline
 
 - Prefer single-column form flow; expand to two columns only when space and readability support it.
-- Keep form control max width at 30rem for typical input/select controls unless requirement differs.
-- Use two spacing levels: section-to-section `var(--sl-spacing-x-large)` and control-to-control `var(--sl-spacing-medium)`.
-- Use separate wrappers for section spacing vs field spacing.
+- Keep typical `sl-input`, `sl-select`, and other form controls at `max-width: 30rem`; do not use unconstrained `width: 100%` on the controls unless the design explicitly requires full-width fields.
+- Use two spacing levels: section-to-section `var(--sl-spacing-x-large)` and control-to-control `var(--sl-spacing-medium)`. Do not use `var(--sl-spacing-3x-small)` or `var(--sl-spacing-2x-small)` as the default form field gap.
+- Use separate wrappers for section spacing vs field spacing: the section wrapper owns `var(--sl-spacing-x-large)`, and the field wrapper owns `var(--sl-spacing-medium)`.
+- Before finalizing a form, verify both the rendered control width and the measured vertical gap between two adjacent fields against these rules.
 
 ## Radio group
 
@@ -75,12 +81,23 @@
 - Always set the `label` attribute on `sl-radio-group`. Do not omit it.
 - Set a `value` attribute on each `sl-radio` to identify the selected option.
 
+## Layout guidance
+
+- Use `eds-shell-template` for app-level chrome.
+- Use `eds-application-layout` for resizable left/right work panels.
+- Use `eds-panel-layout` for panel containers with optional header/footer.
+- Use `eds-page-header` for page-level context and actions inside content.
+- Keep landmark structure clear: nav in sidenav, app actions in appbar, content in main.
+
 ## Buttons
 
 - Use `sl-button` for button actions unless an explicit requirement states otherwise.
 - Default button size is `medium`.
+- Use `variant="primary"` for the single main call-to-action; use `variant="default"` for secondary actions; use `variant="text"` for low-emphasis or inline actions.
 - Keep button width content-based by default; do not stretch to full width unless explicitly required.
-- Keep labels concise and action-oriented.
+- Keep labels concise and action-oriented (see `content.md`).
+- In React, use the literal `class` attribute rather than `className` on Shoelace and EDS custom elements when a CSS class hook is required; verify the rendered custom element has the expected class before relying on that selector.
+- Before finalizing a form, verify that every button is content-fit in the rendered layout and that any custom-element CSS hook is present on the element.
 
 ## Cards
 
@@ -89,9 +106,22 @@
 - Set `heading` for the card title and use `control="checkbox"` or `control="switch"` based on the interaction pattern.
 - Do not compose a selectable tile manually from `sl-card` plus a separate checkbox or switch unless a documented component limitation requires it.
 - Use generic `sl-card` only for non-selectable, presentational containers.
+- Use approved card components (`sl-card`, `eds-selectable-card`, `eds-catalog-card`) based on behavior.
+- Use `var(--sl-spacing-large)` for both horizontal and vertical spacing between cards (for example, `column-gap` and `row-gap` in card grids).
+- Cards in the same row must render at equal height: set `::part(base) { height: 100%; }` if the `base` part is styleable; otherwise use `grid-auto-rows: 1fr` on the grid, `height: 100%` on the item wrapper, and apply `::part(base) { height: 100%; }` inside the component boundary when possible.
+- Verify card heights in the browser on at least two rows before finalizing.
+- Enforce card width at grid track level (for example with tokenized `minmax` tracks).
 
 ## Panels
 
+- Use `eds-appbar` for the app shell header (breadcrumb, page info, right-side actions); use `eds-page-header` for page-level headings inside content regions.
+- Match this slot structure for `eds-appbar`:
+	- `breadcrumb` slot: use `sl-breadcrumb`.
+	- Add a separator with `<span slot="separator">/</span>`.
+	- Use `sl-breadcrumb-item` entries for path segments.
+	- `page-info` slot: use `eds-page-info` and set `heading`.
+	- `right` slot: place utility actions such as `sl-icon-button` and `sl-avatar`.
+- Keep appbar actions concise and content-width.
 - Always use `eds-panel-layout` for panel content that must stay contained inside layout slots (for example, `slot='left-panel'` or `slot='right-panel'` in `eds-application-layout`).
 - Do not place raw content directly in left/right slots; wrap slot content with `eds-panel-layout`.
 - When using `eds-panel-layout` inside a slot container, remove extra container padding because `eds-panel-layout` already includes internal spacing.
@@ -158,7 +188,11 @@
 - For welcome actions, use `eds-button-card` buttons in a token-spaced container and append them in `ava-welcome-message` footer slot.
 - Use `ava-user-message` and `ava-response-message` for runtime chat messages.
 - Message lifecycle should be imperative: append/remove AVA message elements with DOM APIs rather than static JSX lists.
-- On send (`ava-send`), append user message first, set `ava-layout.waiting=true`, disable `ava-input`, then append response and restore input state.
+- On send (`ava-send`), follow this order:
+  1. Append the user message element.
+  2. Set `ava-layout.waiting = true` and disable `ava-input`.
+  3. Append the response element.
+  4. Set `ava-layout.waiting = false` and re-enable `ava-input`.
 - After message updates, call `ava-layout.scrollToBottom()` in `requestAnimationFrame` to keep the latest message in view.
 - Keep AVA copy concise and action-oriented per `content.md`; avoid long, dense response text in starter templates.
 
@@ -169,8 +203,7 @@
 - Set message content with `text`.
 - Use default lifetime (3000 ms) unless there is a clear product requirement to override it.
 - Position the toast at bottom center by styling `::part(base)` with bottom offset `var(--sl-spacing-2x-large)`.
-- Use a short ease-out entry transition with `transition` + `@starting-style` on `::part(base)`: animate `transform` and `opacity` together while preserving horizontal centering, starting at `translate(-50%, var(--sl-spacing-medium))` and `opacity: 0.5`, then ending at `translate(-50%, 0)` and `opacity: 1`.
+- Use a short ease-out entry transition with `transition` + `@starting-style` on `::part(base)`: animate `transform` and `opacity` together while preserving horizontal centering, starting at `translate(-50%, var(--sl-spacing-medium))` and `opacity: 0.5`, then ending at `translate(-50%, 0)` and `opacity: 1`. Note: `@starting-style` requires Chrome 117+, Firefox 129+, Safari 17.5+ — verify browser targets before using.
 - Do not use CSS `animation` on `::part(base)` because it can break the built-in fade-out.
 - Keep toasts non-blocking (no focus trap and no required interaction).
 - Imperative usage is required: create the element on trigger with `document.createElement('eds-toast')` and `appendChild`; never render toast as static markup.
-
