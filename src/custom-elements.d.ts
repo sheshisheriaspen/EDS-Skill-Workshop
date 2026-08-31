@@ -9,6 +9,7 @@ declare module 'react' {
       'sl-checkbox': any;
       'sl-divider': any;
       'sl-dialog': any;
+      'sl-drawer': any;
       'sl-icon': any;
       'sl-icon-button': any;
       'sl-input': any;
@@ -17,13 +18,10 @@ declare module 'react' {
       'sl-radio-group': any;
       'sl-select': any;
       'sl-switch': any;
+      'sl-tab': any;
+      'sl-tab-group': any;
       'sl-textarea': any;
       'sl-tooltip': any;
-      'ava-input': any;
-      'ava-layout': any;
-      'ava-response-message': any;
-      'ava-user-message': any;
-      'ava-welcome-message': any;
       'eds-appbar': any;
       'eds-button-card': any;
       'eds-page-header': any;
@@ -34,6 +32,12 @@ declare module 'react' {
       'eds-shell-template': any;
       'eds-slider': any;
       'eds-toast': any;
+      'ava-input': any;
+      'ava-layout': any;
+      'ava-logo': any;
+      'ava-response-message': any;
+      'ava-user-message': any;
+      'ava-welcome-message': any;
     }
   }
 }

@@ -1,9 +1,17 @@
 # Components
 
+## Scope discipline
+
+- Implement only the UI elements explicitly requested by the user.
+- Do not add unrequested headings, descriptions, labels, helper text, cards, banners, status messages, navigation sections, or actions.
+- Preserve existing content when modifying a UI unless the user asks for it to be removed or replaced.
+- Add accessibility text only when needed to provide an accessible name or meet a specific accessibility requirement; keep it non-visible when visible copy was not requested.
+
 ## Tables and data grids
 
 - All tables and data grids must use AG Grid Community. Do not implement tables with native `<table>` markup or another grid library.
 - Follow the AG Grid implementation guidelines in `implementation.md`, including the required imports, module registration, `legacy` theme configuration, EDS theme classes, filtering defaults, and token-based styling rules.
+- Keep every table and data grid fully contained within its card or parent container: constrain the grid host to `width: 100%`, `max-width: 100%`, and `min-width: 0`, and manage overflow at the container boundary.
 
 ### Table toolbar
 
@@ -43,6 +51,7 @@
 - Do not compose a selectable tile manually from `sl-card` plus a separate checkbox or switch unless a documented component limitation requires it.
 - Use generic `sl-card` only for non-selectable, presentational containers.
 - Use approved card components (`sl-card`, `eds-selectable-card`, `eds-catalog-card`) based on behavior.
+- Always place card headings and titles in the `header` slot
 - Use `var(--sl-spacing-large)` for both horizontal and vertical spacing between cards (for example, `column-gap` and `row-gap` in card grids).
 - Cards in the same row must render at equal height: set `::part(base) { height: 100%; }` if the `base` part is styleable; otherwise use `grid-auto-rows: 1fr` on the grid, `height: 100%` on the item wrapper, and apply `::part(base) { height: 100%; }` inside the component boundary when possible.
 - Verify card heights in the browser on at least two rows before finalizing.
@@ -58,6 +67,7 @@
   - `page-info` slot: use `eds-page-info` and set `heading`.
   - `right` slot: place utility actions such as `sl-icon-button` and `sl-avatar`.
 - Keep appbar actions concise and content-width.
+- When AVA is implemented, always use the AVA logo button instead of a generic icon button. See the AVA section for logo placement and styling requirements.
 - Always use `eds-panel-layout` for panel content that must stay contained inside layout slots (for example, `slot='left-panel'` or `slot='right-panel'` in `eds-application-layout`).
 - Do not place raw content directly in left/right slots; wrap slot content with `eds-panel-layout`.
 - When using `eds-panel-layout` inside a slot container, remove extra container padding because `eds-panel-layout` already includes internal spacing.
@@ -83,9 +93,7 @@
 - Never use `sl-tab-panel` components.
 - Keep tab labels short, scannable, and sentence case.
 - For horizontal tabs, use default placement unless a requirement specifies otherwise.
-- For vertical tabs, always use `placement="end"`.
-- Vertical tabs should always fill the container width.
-- Keep active-tab styling token-based; avoid hard-coded colors when EDS tokens exist.
+- Always set vertical tabs to `placement="end"`, full container width, and full height. Set the host to `flex: 1 1 auto; min-block-size: 0; block-size: 100%`; apply `block-size: 100%` to `::part(base)` and `::part(tabs)`; and unset `--flex-direction` and `--nav-order` on `::part(base)`.
 
 ## Sidenav
 
@@ -93,8 +101,10 @@
 - Do not add custom sidebar styling by default (no inline style/class hooks or sidenav-specific CSS overrides) unless a clear requirement exists.
 - Set `header-text` and `logo` when app branding/context is required.
 - Build navigation entries with `eds-sidenav-item` and use sentence case labels.
+- Use filled Material icons for all sidenav items.
 - Use `type="node"` for standard sidebar navigation items.
-- To add a new sidebar section, place `<sl-divider></sl-divider>` after the previous group, then add `<eds-sidenav-item type="heading" label="Section name"></eds-sidenav-item>` before that section's items.
+- For client-side page switching without an `href`, use `type="node-button"` to prevent full-page navigation or refresh; use `type="node"` when the item navigates to a real URL.
+- Never add a new sidebar section unless explicitly requested. When requested, place `<sl-divider></sl-divider>` after the previous group, then add `<eds-sidenav-item type="heading" label="Section name"></eds-sidenav-item>` before that section's items.
 - Keep a single source of truth for nav items (for example, an array of `{ page, label, icon }`) and render items from it.
 - For hash or client-side routing, keep the active item state synchronized with the current route.
 
@@ -149,7 +159,25 @@
 
 # AVA
 
-## Layout
+## Launch
+
+- Use `sl-drawer` for the AVA overlay when the installed component set does not provide a usable AVA panel.
+- **Always place the AVA logo button in the appbar `right` slot** to open and close the AVA panel. Never use a generic icon button (such as `smart_toy`) in place of the logo.
+- When placed in a drawer, use `ava-layout` and hide the drawer header so AVA owns the chat header and close action.
+
+## Appbar and panel implementation
+
+- Register `@aspentech/pf-ui-assistance/components/ava-logo` and render the logo in the `right` slot of `eds-appbar`.
+- **Always wrap `<ava-logo variant="isotype" />` in a focusable native `<button>` element** with `aria-label="Open AVA"` — do not make the logo itself the only interaction target, and do not use `sl-icon-button`.
+- Keep AVA visibility in React state and render one `sl-drawer` overlay with `placement="end"` and `no-header`.
+- Use a ref and the drawer methods `show()` and `hide()` to synchronize the drawer with React state; do not depend on a boolean `open` attribute alone.
+- Place `ava-layout` inside the drawer and remove drawer body padding with `sl-drawer::part(body) { padding: 0 !important; }` to ensure AVA is full bleed with no padding.
+- Use a ref and imperatively listen for `ava-close` on `ava-layout` to close the parent panel.
+- Listen for `sl-after-hide` to synchronize drawer dismissal from Escape, outside click, or the drawer close button.
+- Keep the drawer implementation shared by portal and application appbars; opening AVA must not navigate away from the current page.
+- Style the logo button with `.ava-logo-button` class for consistent hover, focus, and active states.
+
+## AVA Layout
 
 - Use `ava-layout` as the primary container for AVA chat-style experiences.
 - Use `header-actions` slot for utility actions such as New chat (`sl-icon-button`, optionally wrapped with `sl-tooltip`).
@@ -239,14 +267,15 @@
 ## Dashboard layout
 - Use dashboard layout to present independent data summaries through charts, tables, and KPIs.
 - Organize related summaries in responsive cards that reflow across viewport sizes.
-- Dashboard pages should be laid out in a multi-column grid
 - Dashboards should be responsive and should wrap to fewer columns at narrow browser widths
-- at large viewport widths, the charts themselves should get bigger, and should also grow in height maintaining the same aspect ratio
-- KPI cards should be presented in a distinct, compact grid separate from chart cards
-- KPI cards should contain a concise metric label, a prominent current value, and an optional status or change indicator
-- KPI cards should be flexible width with a max-width of 15rem
 - Use ECharts for charts and AG Grid Community for interactive tables.
 - Set dashboard layout spacing to `padding-inline: var(--sl-spacing-x-large)`, `padding-block: 0`, and `gap: var(--sl-spacing-large)`.
+
+### KPI
+- Use `eds-card` for KPI containers.
+- KPI content in a vertical stack: label, current value, and optional change descriptor.
+- Use `var(--sl-font-size-small)` for the label and change, `var(--sl-font-size-2x-large)` for the value, and EDS text tokens for color. KPI labels use `var(--eds-text-secondary)`.
+- Use `var(--eds-status-fg-color-success)` for positive changes, `var(--eds-status-fg-color-danger)` for negative changes, and default text color for neutral changes; include text so meaning is not conveyed by color alone.
 
 ### Full screen view
 
@@ -271,8 +300,11 @@
 
 ## Form layout
 
-- Prefer single-column form flow; expand to two columns only when space and readability support it.
+- Always use a single-column form flow unless explictly required.
+- Don't wrap in cards and containers
+- Use form heading only if using more than one form sections
 - Keep typical `sl-input`, `sl-select`, and other form controls at `max-width: 30rem`; do not use unconstrained `width: 100%` on the controls unless the design explicitly requires full-width fields.
 - Use two spacing levels: section-to-section `var(--sl-spacing-x-large)` and control-to-control `var(--sl-spacing-medium)`. Do not use `var(--sl-spacing-3x-small)` or `var(--sl-spacing-2x-small)` as the default form field gap.
 - Use separate wrappers for section spacing vs field spacing: the section wrapper owns `var(--sl-spacing-x-large)`, and the field wrapper owns `var(--sl-spacing-medium)`.
+- Don't set inputs as mandatory unless explictly required
 - Before finalizing a form, verify both the rendered control width and the measured vertical gap between two adjacent fields against these rules.
