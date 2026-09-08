@@ -218,8 +218,8 @@ function ApplicationAShell({ theme, themeClasses, onNavigate, onToggleTheme }) {
   return (
     <eds-shell-template class={`application-shell ${themeClasses}`} theme={theme}>
       <eds-appbar slot="appbar" show-menu-button is-application>
-        <sl-icon-button slot="menu-button" library="material" name="menu" label="Open application navigation" onClick={() => sidenavRef.current?.show()} />
-        <sl-icon slot="icon" library="material" name="apps" aria-hidden="true" />
+        <eds-icon-button slot="menu-button" name="menu" label="Open application navigation" onClick={() => sidenavRef.current?.show()} />
+        <eds-icon slot="icon" name="apps" aria-hidden="true" />
         <sl-breadcrumb slot="breadcrumb" aria-label="Application breadcrumb">
           <span slot="separator">/</span>
           <sl-breadcrumb-item onClick={() => handleNavigate('overview')}>Workspace</sl-breadcrumb-item>
@@ -231,9 +231,8 @@ function ApplicationAShell({ theme, themeClasses, onNavigate, onToggleTheme }) {
           <sl-tab slot="nav" panel="activity">Activity</sl-tab>
           <sl-tab slot="nav" panel="settings">Settings</sl-tab>
         </sl-tab-group>
-        <sl-icon-button
+        <eds-icon-button
           slot="right"
-          library="material"
           name={theme === 'light' ? 'dark_mode' : 'light_mode'}
           label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
           onClick={onToggleTheme}
@@ -330,9 +329,8 @@ function App() {
 
       <eds-appbar slot="appbar" is-application>
         <eds-page-info slot="page-info" heading={activePage.label} />
-        <sl-icon-button
+        <eds-icon-button
           slot="right"
-          library="material"
           name={theme === 'light' ? 'dark_mode' : 'light_mode'}
           label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
