@@ -47,24 +47,31 @@ import '@shoelace-style/shoelace/dist/components/tab-group/tab-group.js'
 import '@shoelace-style/shoelace/dist/components/tab/tab.js'
 import '@shoelace-style/shoelace/dist/components/textarea/textarea.js'
 
+/* Importing the loaders */
+import { defineCustomElements as defineCoreCustomElements } from '@aspentech/pf-ui-core/loader';
+import { defineCustomElements as defineCompoundCustomElements } from '@aspentech/pf-ui-compound/loader';
+import { defineCustomElements as defineAssistanceCustomElements } from '@aspentech/pf-ui-assistance/loader';
+
+/* Registering the loaders */
+defineCoreCustomElements();
+defineCompoundCustomElements();
+defineAssistanceCustomElements();
+
 ModuleRegistry.registerModules([AllCommunityModule])
 
-// Icon Registry Setup
-const iconRegExp = /^(.*?)(_(round|sharp|filled))?$/;
-
-setBasePath('/assets/shoelace');
+const iconRegExp = /^(.*?)(_(outlined|round|sharp|filled|two_tone))?$/;
 
 registerIconLibrary('material', {
-  resolver: name => {
+  resolver: (name) => {
     const match = iconRegExp.exec(name);
     if (!match) return '';
     const iconName = match[1];
     const variant = match[3] || 'outlined';
-    const iconUrl = `/assets/icons/material/${variant}/${iconName}.svg`;
-    console.log(`Loading icon: ${name} -> ${iconUrl}`);
-    return iconUrl;
+
+    return '/assets/sprites/material-icons-' + variant + '.svg#' + iconName;
   },
-  mutator: svg => svg.setAttribute('fill', 'currentColor'),
+  mutator: (svg) => svg.setAttribute('fill', 'currentColor'),
+  spriteSheet: true
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
