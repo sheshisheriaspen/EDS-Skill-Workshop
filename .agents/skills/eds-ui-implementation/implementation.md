@@ -85,10 +85,9 @@ Framework implementation notes:
 
 ### ECharts
 
-- Bind only chart typography colors to `var(--eds-text-default)` and `var(--eds-text-secondary)`.
-- Do not bind chart series or data colors to EDS tokens; keep the default ECharts palette.
+- Bind chart colors and text to EDS tokens.
+- Do not use default ECharts palette or typography.
 - Start with this order: interactive default, interactive hover, text link.
-- Do not infer any styling from EDS styles for things like border-radius, etc.
 
 ### AG Grid
 
