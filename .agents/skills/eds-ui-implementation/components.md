@@ -1,5 +1,12 @@
 # Components
 
+## Scope discipline
+
+- Implement only the UI elements explicitly requested by the user.
+- Do not add unrequested headings, descriptions, labels, helper text, cards, banners, status messages, navigation sections, or actions.
+- Preserve existing content when modifying a UI unless the user asks for it to be removed or replaced.
+- Add accessibility text only when needed to provide an accessible name or meet a specific accessibility requirement; keep it non-visible when visible copy was not requested.
+
 ## Layout
 
 - Always confirm the web component host receives a real `class` attribute in rendered DOM.

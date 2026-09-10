@@ -1,53 +1,44 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
-import { cpSync, existsSync, mkdirSync } from 'fs'
+import { mkdirSync, copyFileSync } from 'fs'
+import { join } from 'path'
 
-// Custom plugin to copy Shoelace and Material Design Icons assets
-function copyAssetsPlugin() {
+// Custom plugin to copy Aspentech sprite files
+function copyAspentechSpritesPlugin() {
   return {
-    name: 'copy-assets',
+    name: "copy-aspentech-sprites",
     buildStart() {
+      // Copy sprite files from the package to public folder
+      const spriteFiles = [
+        "material-icons-filled.svg",
+        "material-icons-outlined.svg",
+        "material-icons-round.svg",
+        "material-icons-sharp.svg",
+        "material-icons-two-tone.svg",
+      ];
+
+      const srcDir = join(
+        __dirname,
+        "node_modules/@aspentech/pf-ui-core/dist/sprites",
+      );
+      const destDir = join(__dirname, "public/assets/sprites");
+
       try {
-        // Paths
-        const shoelaceAssetsPath = resolve(__dirname, 'node_modules/@shoelace-style/shoelace/dist/assets')
-        const shoelaceDestPath = resolve(__dirname, 'public/assets/shoelace')
-        
-        const materialIconsPath = resolve(__dirname, 'node_modules/@material-design-icons/svg')
-        const materialDestPath = resolve(__dirname, 'public/assets/icons/material')
-
-        // Create directories if they don't exist
-        if (!existsSync('public/assets')) {
-          mkdirSync('public/assets', { recursive: true })
-        }
-
-        // Copy Shoelace assets
-        if (existsSync(shoelaceAssetsPath)) {
-          if (!existsSync(shoelaceDestPath)) {
-            mkdirSync(shoelaceDestPath, { recursive: true })
-          }
-          cpSync(shoelaceAssetsPath, shoelaceDestPath, { recursive: true })
-          console.log('✓ Copied Shoelace assets')
-        }
-
-        // Copy Material Design Icons
-        if (existsSync(materialIconsPath)) {
-          if (!existsSync(materialDestPath)) {
-            mkdirSync(materialDestPath, { recursive: true })
-          }
-          cpSync(materialIconsPath, materialDestPath, { recursive: true })
-          console.log('✓ Copied Material Design Icons')
-        }
+        mkdirSync(destDir, { recursive: true });
+        spriteFiles.forEach((file) => {
+          copyFileSync(join(srcDir, file), join(destDir, file));
+        });
+        console.log("✓ Copied Aspentech sprite files to public/assets/sprites");
       } catch (error) {
-        console.warn('Asset copying failed:', error.message)
+        console.warn("Warning: Could not copy sprite files:", error);
       }
-    }
-  }
+    },
+  };
 }
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), copyAssetsPlugin()],
+  plugins: [react(), copyAspentechSpritesPlugin()],
   build: {
     rollupOptions: {
       output: {
