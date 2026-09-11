@@ -40,6 +40,43 @@ Framework implementation notes:
 - Vue: use v-bind and v-on for custom element props/events and confirm attribute versus property behavior.
 - Other frameworks: follow the same contract-first approach, then verify real DOM output and interaction behavior.
 
+### React setup essentials
+
+- Install `@aspentech/pf-ui-core`; add `@aspentech/pf-ui-compound` and `@aspentech/pf-ui-assistance` when their components are used.
+- Import `@aspentech/pf-ui-core/main.css` once at the application entry point.
+- Register every Aspentech library used by the app with its loader before rendering:
+  ```js
+  import { defineCustomElements as compoundCustomElements } from '@aspentech/pf-ui-compound/loader'
+  import { defineCustomElements as coreCustomElements } from '@aspentech/pf-ui-core/loader'
+
+  compoundCustomElements()
+  coreCustomElements()
+  ```
+- Load Shoelace globally from `@shoelace-style/shoelace/dist/shoelace.js` before using Shoelace elements. When importing individual elements, import each one explicitly in the module that uses it.
+- Register the `material` icon library with the Aspentech sprite-sheet resolver before rendering icons. Support the `_outlined`, `_round`, `_sharp`, `_filled`, and `_two_tone` suffixes, default to `outlined`, set the SVG fill to `currentColor`, and set `spriteSheet: true`.
+- Copy `@aspentech/pf-ui-core/dist/sprites` to the build output at `/assets/sprites` so Material icons resolve at runtime. For Vite, implement this as a build plugin; for Webpack, use `CopyWebpackPlugin`.
+- In TypeScript projects, declare every custom element used in JSX in a `custom-elements.d.ts` file. At minimum, declare `sl-icon` and the EDS elements used by the app.
+- Prefer Shoelace React wrappers when available. For direct custom elements, use the documented kebab-case tags in JSX and verify host attributes, properties, slots, and custom events in the browser.
+
+### Angular setup essentials
+
+- Use Angular 15 or newer. Angular 20 is not validated for this integration and should not be adopted until compatibility is confirmed.
+- Install `@aspentech/pf-ui-core`; add `@aspentech/pf-ui-compound` and `@aspentech/pf-ui-assistance` when their components are used.
+- Register every Aspentech library used by the app in `main.ts` before bootstrapping:
+  ```ts
+  import { defineCustomElements as compoundCustomElements } from '@aspentech/pf-ui-compound/loader'
+  import { defineCustomElements as coreCustomElements } from '@aspentech/pf-ui-core/loader'
+  import '@shoelace-style/shoelace/dist/shoelace.js'
+
+  compoundCustomElements()
+  coreCustomElements()
+  ```
+- Register the `material` icon library in `main.ts` with the Aspentech sprite-sheet resolver. Support the `_outlined`, `_round`, `_sharp`, `_filled`, and `_two_tone` suffixes, default to `outlined`, set the SVG fill to `currentColor`, and set `spriteSheet: true`.
+- Add `node_modules/@aspentech/pf-ui-core/dist/main.css` to the `styles` array in `angular.json` or `project.json`.
+- Copy `node_modules/@aspentech/pf-ui-core/dist/sprites` to `assets/sprites` in the `assets` configuration so Material icons resolve at runtime. If using individual SVGs instead, copy `node_modules/@material-design-icons/svg` to `assets/icons` and use the file-based resolver.
+- Add `CUSTOM_ELEMENTS_SCHEMA` to every NgModule that renders EDS or Shoelace elements. For standalone components, add it to the component `schemas` array. Angular 15+ supports this standalone configuration.
+- Bind custom-element properties and events with Angular syntax, for example `[value]="searchTermInput"` and `(sl-input)="onSearch($event)"`. Always set `library="material"` on `sl-icon` and `sl-icon-button`.
+
 ## 5) Styling and theming
 
 - Use EDS and Shoelace tokens for color, size, spacing, typography, border, and elevation.
@@ -70,7 +107,7 @@ Framework implementation notes:
 - Add or update tests for new behavior, regressions, and critical edge cases.
 - Prefer behavior-focused tests over implementation-detail tests.
 - Verify responsive layouts on common viewport sizes.
-- Run a final self-check against design, accessibility, and content guidance.
+- Run a final self-check against design, accessibility, and content guidance, and run the production build at a meaningful checkpoint before finalizing code changes.
 
 ## 9) Code review checklist
 
@@ -88,6 +125,7 @@ Framework implementation notes:
 - Bind chart colors and text to EDS tokens.
 - Do not use default ECharts palette or typography.
 - Start with this order: interactive default, interactive hover, text link.
+- Initialize charts only after their containers have measurable dimensions; resize them with the host layout and dispose instances and listeners on unmount.
 
 ### AG Grid
 

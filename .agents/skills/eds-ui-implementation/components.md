@@ -18,6 +18,7 @@
 - Structure the toolbar with two containers: a `filters` area on the left and an `actions` area on the right.
 - The left `filters` area must always include the item count. Add filters only when the table needs them; use `sl-radio-group` for mutually exclusive filter choices and keep controls ordered by function.
 - The right `actions` area includes a search icon button, one content-width `sl-button` with `variant="primary"`, and an overflow menu icon button, in that order. Inputs and buttons use their default medium size.
+- Do not set `size="small"` or `size="large"` on table-toolbar controls unless the design explicitly requires it.
 - Use `sl-icon-button` for familiar icon actions and provide an accessible `label` for every icon button.
 - Style the item count with `var(--eds-text-secondary)` and `var(--sl-font-size-small)`.
 - Use `var(--sl-spacing-small)` for uniform spacing between controls within both areas.
@@ -37,7 +38,7 @@
 - Use `sl-button` for button actions unless an explicit requirement states otherwise.
 - Always use the default button size: `medium`.
 - Use `variant="primary"` for the single main call-to-action; use `variant="default"` for secondary actions; use `variant="text"` for low-emphasis or inline actions.
-- Keep button width content-based by default; do not stretch to full width unless explicitly required.
+- All buttons must be content-fit by default, including at responsive breakpoints. Do not stretch a button to full width or apply flex growth.
 - Keep labels concise and action-oriented (see `content.md`).
 - In React, use the literal `class` attribute rather than `className` on Shoelace and EDS custom elements when a CSS class hook is required; verify the rendered custom element has the expected class before relying on that selector.
 - Before finalizing a form, verify that every button is content-fit in the rendered layout and that any custom-element CSS hook is present on the element.
@@ -49,6 +50,7 @@
 - Set `heading` for the card title and use `control="checkbox"` or `control="switch"` based on the interaction pattern.
 - Do not compose a selectable tile manually from `sl-card` plus a separate checkbox or switch unless a documented component limitation requires it.
 - Use generic `sl-card` only for non-selectable, presentational containers.
+- Use cards for dashboard-style pages that combine multiple content types or visualizations. Do not wrap a standalone page table in a card unless the user explicitly requests it.
 - Always place card headings and titles in the `header` slot
 - Use approved card components (`sl-card`, `eds-selectable-card`, `eds-catalog-card`) based on behavior.
 - Use `var(--sl-spacing-large)` for both horizontal and vertical spacing between cards (for example, `column-gap` and `row-gap` in card grids).
@@ -174,8 +176,9 @@
 - Use portal layout primarily for navigation-focused experiences.
 - Portal layout includes a fixed sidenav and appbar without application-level tabs.
 - Use `eds-shell-template` for app-level chrome.
+- Use `eds-appbar` with `eds-page-info` in the `page-info` slot; drive its `heading` from the active navigation item.
 - Keep portal page bodies empty unless the user explicitly requests page content, controls, data, or messaging.
-- Switch the fixed sidenav to `mode="collapsed"` at the compact breakpoint so navigation icons remain available; allow the EDS sidenav hover behavior to expand it.
+- Switch the mode="expanded" sidenav to `mode="collapsed"` at the compact breakpoint so navigation icons remain available; allow the EDS sidenav hover behavior to expand it.
 - Use filled Material icons for portal sidenav items and register the Material icon library before rendering sidenav items that use `icon`.
 - Always include small `sl-avatar` in the appbar with an accessible label and initials or an image.
 - Use `eds-application-layout` for resizable left/right work panels.
@@ -228,6 +231,7 @@
 - KPI cards should contain a concise metric label, a prominent current value, and an optional status or change indicator
 - Use ECharts for charts and AG Grid Community for interactive tables.
 - Set dashboard layout spacing to `padding-inline: var(--sl-spacing-x-large)`, `padding-block: 0`, and `gap: var(--sl-spacing-large)`.
+- Dashboard tables do not need a toolbar unless the user explicitly requests table actions or filtering.
 
 ### KPI
 - KPI content in a vertical stack: label, current value, and optional change descriptor.
