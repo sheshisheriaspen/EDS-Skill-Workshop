@@ -155,44 +155,6 @@
 - Keep toasts non-blocking (no focus trap and no required interaction).
 - Imperative usage is required: create the element on trigger with `document.createElement('eds-toast')` and `appendChild`; never render toast as static markup.
 
-# AVA
-
-## Launch
-
-- Use `sl-drawer` for the AVA overlay when the installed component set does not provide a usable AVA panel.
-- When placed in a drawer, use `ava-layout` and hide the drawer header so AVA owns the chat header and close action.
-
-## Appbar and panel implementation
-
-- Register `@aspentech/pf-ui-assistance/components/ava-logo` and render the logo in the `right` slot of `eds-appbar`.
-- **Always wrap `<ava-logo variant="isotype" />` in a focusable native `<button>` element** with `aria-label="Open AVA"` — do not make the logo itself the only interaction target, and do not use `sl-icon-button`.
-- Keep AVA visibility in React state and render one `sl-drawer` overlay with `placement="end"` and `no-header`.
-- Use a ref and the drawer methods `show()` and `hide()` to synchronize the drawer with React state; do not depend on a boolean `open` attribute alone.
-- Always place `ava-layout` inside the drawer and set `sl-drawer::part(body)` padding to `0` so AVA renders full bleed.
-- Use a ref and imperatively listen for `ava-close` on `ava-layout` to close the parent panel.
-- Listen for `sl-after-hide` to synchronize drawer dismissal from Escape, outside click, or the drawer close button.
-- Keep the drawer implementation shared by portal and application appbars; opening AVA must not navigate away from the current page.
-- Style the logo button with `.ava-logo-button` class for consistent hover, focus, and active states.
-
-## AVA Layout
-
-- Use `ava-layout` as the primary container for AVA chat-style experiences.
-- Use `header-actions` slot for utility actions such as New chat (`sl-icon-button`, optionally wrapped with `sl-tooltip`).
-- Use `ava-input` in the `footer` slot for message entry and controls.
-- Use `ava-welcome-message` for onboarding content and starter actions.
-- For welcome actions, use `eds-button-card` buttons in a token-spaced container and append them in `ava-welcome-message` footer slot.
-- Use `ava-user-message` and `ava-response-message` for runtime chat messages.
-- Keep AVA copy concise and action-oriented per `content.md`; avoid long, dense response text in starter templates.
-
-## Interaction
-- Message lifecycle should be imperative: append/remove AVA message elements with DOM APIs rather than static JSX lists.
-- On send (`ava-send`), follow this order:
-  1. Append the user message element.
-  2. Set `ava-layout.waiting = true` and disable `ava-input`.
-  3. Append the response element.
-  4. Set `ava-layout.waiting = false` and re-enable `ava-input`.
-- After message updates, call `ava-layout.scrollToBottom()` in `requestAnimationFrame` to keep the latest message in view.
-
 # Layouts
 
 ## Layout guidance
@@ -303,3 +265,41 @@
 - Use separate wrappers for section spacing vs field spacing: the section wrapper owns `var(--sl-spacing-x-large)`, and the field wrapper owns `var(--sl-spacing-medium)`.
 - Do not set inputs as mandatory unless explicitly required.
 - Before finalizing a form, verify both the rendered control width and the measured vertical gap between two adjacent fields against these rules.
+
+# AVA
+
+## Launch
+
+- Use `sl-drawer` for the AVA overlay when the installed component set does not provide a usable AVA panel.
+- When placed in a drawer, use `ava-layout` and hide the drawer header so AVA owns the chat header and close action.
+
+## Appbar and panel implementation
+
+- Register `@aspentech/pf-ui-assistance/components/ava-logo` and render the logo in the `right` slot of `eds-appbar`.
+- **Always wrap `<ava-logo variant="isotype" />` in a focusable native `<button>` element** with `aria-label="Open AVA"` — do not make the logo itself the only interaction target, and do not use `sl-icon-button`.
+- Keep AVA visibility in React state and render one `sl-drawer` overlay with `placement="end"` and `no-header`.
+- Use a ref and the drawer methods `show()` and `hide()` to synchronize the drawer with React state; do not depend on a boolean `open` attribute alone.
+- Always place `ava-layout` inside the drawer and set `sl-drawer::part(body)` padding to `0` so AVA renders full bleed.
+- Use a ref and imperatively listen for `ava-close` on `ava-layout` to close the parent panel.
+- Listen for `sl-after-hide` to synchronize drawer dismissal from Escape, outside click, or the drawer close button.
+- Keep the drawer implementation shared by portal and application appbars; opening AVA must not navigate away from the current page.
+- Style the logo button with `.ava-logo-button` class for consistent hover, focus, and active states.
+
+## AVA Layout
+
+- Use `ava-layout` as the primary container for AVA chat-style experiences.
+- Use `header-actions` slot for utility actions such as New chat (`sl-icon-button`, optionally wrapped with `sl-tooltip`).
+- Use `ava-input` in the `footer` slot for message entry and controls.
+- Use `ava-welcome-message` for onboarding content and starter actions.
+- For welcome actions, use `eds-button-card` buttons in a token-spaced container and append them in `ava-welcome-message` footer slot.
+- Use `ava-user-message` and `ava-response-message` for runtime chat messages.
+- Keep AVA copy concise and action-oriented per `content.md`; avoid long, dense response text in starter templates.
+
+## Interaction
+- Message lifecycle should be imperative: append/remove AVA message elements with DOM APIs rather than static JSX lists.
+- On send (`ava-send`), follow this order:
+  1. Append the user message element.
+  2. Set `ava-layout.waiting = true` and disable `ava-input`.
+  3. Append the response element.
+  4. Set `ava-layout.waiting = false` and re-enable `ava-input`.
+- After message updates, call `ava-layout.scrollToBottom()` in `requestAnimationFrame` to keep the latest message in view.
