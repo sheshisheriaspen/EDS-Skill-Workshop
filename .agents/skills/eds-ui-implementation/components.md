@@ -20,6 +20,7 @@
 - The right `actions` area includes a search icon button, one content-width `sl-button` with `variant="primary"`, and an overflow menu icon button, in that order. Inputs and buttons use their default medium size.
 - Do not set `size="small"` or `size="large"` on table-toolbar controls unless the design explicitly requires it.
 - Use `sl-icon-button` for familiar icon actions and provide an accessible `label` for every icon button.
+- Use the `more_horiz` icon for every overflow/menu icon button across the app (table toolbars, appbars, page headers, cards, etc.).
 - Style the item count with `var(--eds-text-secondary)` and `var(--sl-font-size-small)`.
 - Use `var(--sl-spacing-small)` for uniform spacing between controls within both areas.
 - When the search icon button is selected, replace it with a standard-size `sl-input` using the placeholder `Search...` and keep focus in the input.
@@ -38,7 +39,7 @@
 - Use `sl-button` for button actions unless an explicit requirement states otherwise.
 - Always use the default button size: `medium`.
 - Use `variant="primary"` for the single main call-to-action; use `variant="default"` for secondary actions; use `variant="text"` for low-emphasis or inline actions.
-- All buttons must be content-fit by default, including at responsive breakpoints. Do not stretch a button to full width or apply flex growth.
+- All buttons must be content-fit by default, including at responsive breakpoints. Do not stretch a button to full width or apply flex growth; in a flex column, also set `align-self: flex-start` since `align-items: stretch` stretches buttons too.
 - Keep labels concise and action-oriented (see `content.md`).
 - In React, use the literal `class` attribute rather than `className` on Shoelace and EDS custom elements when a CSS class hook is required; verify the rendered custom element has the expected class before relying on that selector.
 - Before finalizing a form, verify that every button is content-fit in the rendered layout and that any custom-element CSS hook is present on the element.
@@ -152,7 +153,7 @@
 - Set message content with `text`.
 - Use default lifetime (3000 ms) unless there is a clear product requirement to override it.
 - Position the toast at bottom center by styling `::part(base)` with bottom offset `var(--sl-spacing-2x-large)`.
-- Use a short ease-out entry transition with `transition` + `@starting-style` on `::part(base)`: animate `transform` and `opacity` together while preserving horizontal centering, starting at `translate(-50%, var(--sl-spacing-medium))` and `opacity: 0.5`, then ending at `translate(-50%, 0)` and `opacity: 1`. Note: `@starting-style` requires Chrome 117+, Firefox 129+, Safari 17.5+ — verify browser targets before using.
+- Use a short ease-out entry transition with `transition` + `@starting-style` on `::part(base)`: animate `transform` and `opacity` together while preserving horizontal centering, starting at `translate(-50%, var(--sl-spacing-large))` and `opacity: 0.5`, then ending at `translate(-50%, 0)` and `opacity: 1`. Note: `@starting-style` requires Chrome 117+, Firefox 129+, Safari 17.5+ — verify browser targets before using.
 - Do not use CSS `animation` on `::part(base)` because it can break the built-in fade-out.
 - Keep toasts non-blocking (no focus trap and no required interaction).
 - Imperative usage is required: create the element on trigger with `document.createElement('eds-toast')` and `appendChild`; never render toast as static markup.
@@ -183,7 +184,7 @@
 - Always include small `sl-avatar` in the appbar with an accessible label and initials or an image.
 - Use `eds-application-layout` for resizable left/right work panels.
 - Use `eds-panel-layout` for panel containers with optional header/footer.
-- Use `eds-page-header` for page-level context and actions inside content.
+- Do not use `eds-page-header` for portal pages: the active page name is already shown via `eds-page-info` in the appbar.
 - Keep landmark structure clear: nav in sidenav, app actions in appbar, content in main.
 ## Application layout
 
