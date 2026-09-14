@@ -103,7 +103,7 @@ Framework implementation notes:
 
 ## 8) Testing and verification
 
-- Validate core user flows after each meaningful UI change.
+- Validate core user flows after each meaningful UI change, but keep verification lightweight: prefer static checks and a single focused pass over repeated build/browser test cycles.
 - Add or update tests for new behavior, regressions, and critical edge cases.
 - Prefer behavior-focused tests over implementation-detail tests.
 - Verify responsive layouts on common viewport sizes.
@@ -122,9 +122,8 @@ Framework implementation notes:
 
 ### ECharts
 
-- Bind chart colors and text to EDS tokens.
-- Do not use default ECharts palette or typography.
-- Start with this order: interactive default, interactive hover, text link.
+- Use the out-of-the-box ECharts theme/palette for series colors (bars, slices, lines, points). Do not override series colors with EDS tokens.
+- Bind text, labels, gridlines, and axis colors to `--eds-text-secondary` and `--eds-border-weak` via `getComputedStyle` (ECharts can't read `var()` directly), and re-apply the option on theme change (for example a `MutationObserver` on the `theme` attribute) so colors don't freeze at mount.
 - Initialize charts only after their containers have measurable dimensions; resize them with the host layout and dispose instances and listeners on unmount.
 
 ### AG Grid
@@ -173,6 +172,7 @@ const gridOptions = {
 - Do not add custom `--ag-*` CSS variable overrides; all visual tokens are defined in `eds-aggrid-theme`.
 - Do not use any other AG Grid built-in theme class (`ag-theme-alpine`, `ag-theme-balham`, etc.).
 - Use pagination only when explicitly required.
+- Remove the default border on `.ag-root-wrapper { border: none; }`.
 
 ## 11) Token mapping defaults
 
