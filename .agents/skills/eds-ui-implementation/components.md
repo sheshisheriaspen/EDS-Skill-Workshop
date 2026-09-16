@@ -58,6 +58,7 @@
 - Cards in the same row must render at equal height: set `::part(base) { height: 100%; }` if the `base` part is styleable; otherwise use `grid-auto-rows: 1fr` on the grid, `height: 100%` on the item wrapper, and apply `::part(base) { height: 100%; }` inside the component boundary when possible.
 - Verify card heights in the browser on at least two rows before finalizing.
 - Enforce card width at grid track level (for example with tokenized `minmax` tracks).
+- For `eds-selectable-card` grid items, wait for hydration and set both the nested `sl-card.selectable-card` and its shadow-root `.card` base to `display: block; width: 100%; height: 100%`.
 
 ## Panels
 
@@ -93,6 +94,7 @@
 - Use `sl-tab-group` with `sl-tab` only.
 - Never use `sl-tab-panel` components.
 - Keep tab labels short, scannable, and sentence case.
+- Always set the first tab in a tab group active by default unless stated otherwise.
 - For horizontal tabs, use default placement unless a requirement specifies otherwise.
 - Always set vertical tabs to `placement="end"`, full container width, and full height. Set the host to `flex: 1 1 auto; min-block-size: 0; block-size: 100%`; apply `block-size: 100%` to `::part(base)` and `::part(tabs)`; and unset `--flex-direction` and `--nav-order` on `::part(base)`.
 
@@ -174,6 +176,7 @@
 
 
 ## Portal layout
+
 - Use portal layout primarily for navigation-focused experiences.
 - Portal layout includes a fixed sidenav and appbar without application-level tabs.
 - Use `eds-shell-template` for app-level chrome.
@@ -186,6 +189,8 @@
 - Use `eds-panel-layout` for panel containers with optional header/footer.
 - Do not use `eds-page-header` for portal pages: the active page name is already shown via `eds-page-info` in the appbar.
 - Keep landmark structure clear: nav in sidenav, app actions in appbar, content in main.
+
+
 ## Application layout
 
 - For application layout opened from app navigation, use `eds-shell-template` and omit the fixed `sidenav` slot.
@@ -196,8 +201,9 @@
 - In `eds-page-info`, place optional menu options in `heading-menu-items` using `sl-menu-item`.
 - In `eds-page-info`, place optional state badges in the `badge` slot using `sl-badge`.
 - In the `center` slot, use `sl-tab-group` for application-level tabs. Keep tab labels concise and noun-based.
-- In the `right` slot, use concise utility actions such as `sl-button` and `sl-icon-button`.
+- In the `right` slot, always include small `sl-avatar` (as in the portal appbar) alongside any other concise utility actions such as `sl-button` and `sl-icon-button`. Do not add a close/dismiss icon button; navigation back to the portal happens via the breadcrumb or modal sidenav.
 - In the default content area (`main`), implement `eds-application-layout` as the primary layout container.
+- The app's main workarea `eds-page-header` includes a primary `sl-button` (for example "Save") and a `more_horiz` overflow `sl-icon-button`, both in the `controls` slot.
 - For application pages, remove content-area padding and width constraints so the layout is full-bleed.
 - Render `eds-application-layout` as a direct child of the application content area (avoid extra wrapper containers that can constrain sizing).
 - Ensure `eds-application-layout` takes all available horizontal and vertical space (`inline-size: 100%`, `block-size: 100%`).
