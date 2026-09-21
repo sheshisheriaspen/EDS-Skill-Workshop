@@ -2,6 +2,7 @@
 
 - Implement only the UI elements explicitly requested by the user.
 - Do not add unrequested headings, descriptions, labels, helper text, cards, banners, status messages, navigation sections, or actions.
+- Never override existing backgrounds or add decorative or filler content unless explicitly requested.
 - Preserve existing content when modifying a UI unless the user asks for it to be removed or replaced.
 
 # Components
@@ -17,6 +18,7 @@
 - Place the table toolbar directly above the AG Grid and use `var(--sl-spacing-small)` for the gap between the toolbar and grid.
 - Structure the toolbar with two containers: a `filters` area on the left and an `actions` area on the right.
 - The left `filters` area must always include the item count. Add filters only when the table needs them; use `sl-radio-group` for mutually exclusive filter choices and keep controls ordered by function.
+- Bind the item count to the grid's displayed row count so it updates when filters or search reduce the visible rows.
 - The right `actions` area includes a search icon button, one content-width `sl-button` with `variant="primary"`, and an overflow menu icon button, in that order. Inputs and buttons use their default medium size.
 - Do not set `size="small"` or `size="large"` on table-toolbar controls unless the design explicitly requires it.
 - Use `sl-icon-button` for familiar icon actions and provide an accessible `label` for every icon button.
