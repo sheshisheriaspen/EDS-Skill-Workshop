@@ -38,6 +38,7 @@ function copyAspentechSpritesPlugin() {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/EDS-Skill-Workshop/',
   plugins: [react(), copyAspentechSpritesPlugin()],
   build: {
     rollupOptions: {
